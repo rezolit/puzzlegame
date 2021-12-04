@@ -3,6 +3,8 @@
 
 #include "FirstPersonCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
@@ -14,6 +16,7 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	FirstPersonCamera->SetupAttachment(RootComponent);
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
+	SprintAdditionalSpeed = 300.0f;
 }
 
 // Called when the game starts or when spawned
@@ -41,7 +44,10 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	InputComponent->BindAxis("MoveRight", this, &AFirstPersonCharacter::MoveRight);
 
 	InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AFirstPersonCharacter::Jump);
-	InputComponent->BindAction("StopJumping", EInputEvent::IE_Released, this, &AFirstPersonCharacter::StopJumping);
+	InputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AFirstPersonCharacter::StopJumping);
+
+	InputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &AFirstPersonCharacter::Sprint);
+	InputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &AFirstPersonCharacter::StopSprinting);
 
 	InputComponent->BindAxis("LookUp", this, &AFirstPersonCharacter::LookUp);
 	InputComponent->BindAxis("LookHorizontal", this, &AFirstPersonCharacter::LookHorizontal);
@@ -59,12 +65,27 @@ void AFirstPersonCharacter::MoveRight(float Axis)
 
 void AFirstPersonCharacter::Jump()
 {
-	ACharacter::Jump();
+	if (CanJumping) {
+		ACharacter::Jump();
+	}
 }
 
 void AFirstPersonCharacter::StopJumping()
 {
-	ACharacter::StopJumping();
+	if (CanJumping)
+	{
+		ACharacter::StopJumping();
+	}
+}
+
+void AFirstPersonCharacter::Sprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed += SprintAdditionalSpeed;
+}
+
+void AFirstPersonCharacter::StopSprinting()
+{
+	GetCharacterMovement()->MaxWalkSpeed -= SprintAdditionalSpeed;
 }
 
 void AFirstPersonCharacter::LookUp(float Axis)

@@ -21,6 +21,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	UCameraComponent* FirstPersonCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
+	float SprintAdditionalSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
+    bool CanJumping;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,8 +33,12 @@ protected:
 	// Movement methods
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
+	
 	virtual void Jump() override;
 	virtual void StopJumping() override;
+	
+	void Sprint();
+	void StopSprinting();
 
 	void LookUp(float Axis);
 	void LookHorizontal(float Axis);
